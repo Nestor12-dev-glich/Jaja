@@ -1,0 +1,189 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+local LP = Players.LocalPlayer
+local State = { batAimbotToggled = false }
+
+-- ==================== BAT AIMBOT ====================
+
+local function getNearestEnemy()
+    local char = LP.Character
+    if not char then return nil, nil end
+    local myHRP = char:FindFirstChild("HumanoidRootPart")
+    if not myHRP then return nil, nil end
+    local pos = myHRP.Position
+
+    local nearestHRP, nearestTorso, nearestHum
+    local nearestDist = math.huge
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LP and plr.Character then
+            local ehRP = plr.Character:FindFirstChild("HumanoidRootPart")
+            local eHum = plr.Character:FindFirstChildOfClass("Humanoid")
+            local eTorso = plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")
+
+            if ehRP and eHum and eHum.Health > 0 then
+                local dist = (ehRP.Position - pos).Magnitude
+                if dist < nearestDist then
+                    nearestDist = dist
+                    nearestHRP = ehRP
+                    nearestTorso = eTorso or ehRP
+                    nearestHum = eHum
+                end
+            end
+        end
+    end
+    return nearestHRP, nearestTorso, nearestHum
+end
+
+local aimbotConn
+
+local function startBatAimbot()
+    if aimbotConn then return end
+
+    aimbotConn = RunService.RenderStepped:Connect(function()
+        if not State.batAimbotToggled then return end
+
+        local char = LP.Character
+        local myHRP = char and char:FindFirstChild("HumanoidRootPart")
+        local myHum = char and char:FindFirstChildOfClass("Humanoid")
+        if not myHRP or not myHum then return end
+
+        local enemyHRP, enemyTorso = getNearestEnemy()
+        if not enemyHRP then
+            myHRP.AssemblyLinearVelocity = Vector3.new(0, myHRP.AssemblyLinearVelocity.Y, 0)
+            return
+        end
+
+        local enemyPos = (enemyTorso or enemyHRP).Position
+        local enemyLook = (enemyTorso or enemyHRP).CFrame.LookVector
+        local enemyVel = enemyHRP.AssemblyLinearVelocity
+
+        local frontOffset = Vector3.new(enemyLook.X, 0, enemyLook.Z).Unit * 3.5
+        local goalPos = enemyPos + frontOffset
+        local toGoal = goalPos - myHRP.Position
+        local flatToGoal = Vector3.new(toGoal.X, 0, toGoal.Z)
+        local flatDist = flatToGoal.Magnitude
+        local yDiff = enemyPos.Y - myHRP.Position.Y
+
+        local yVel = myHRP.AssemblyLinearVelocity.Y
+        if myHum.FloorMaterial ~= Enum.Material.Air then
+            if yDiff > 0.5 or enemyVel.Y > 5 then
+                yVel = 55
+            end
+        else
+            yVel = yDiff * 20 + enemyVel.Y * 0.5
+            yVel = math.clamp(yVel, -100, 100)
+        end
+
+        local speed = 56.5
+        if flatDist > 1 then
+            local moveDir = flatToGoal.Unit
+            myHRP.AssemblyLinearVelocity = Vector3.new(moveDir.X * speed, yVel, moveDir.Z * speed)
+        else
+            local look = enemyLook
+            local pushX = enemyVel.X + look.X * 5
+            local pushZ = enemyVel.Z + look.Z * 5
+            myHRP.AssemblyLinearVelocity = Vector3.new(pushX, yVel, pushZ)
+        end
+    end)
+end
+
+local function stopBatAimbot()
+    if aimbotConn then
+        aimbotConn:Disconnect()
+        aimbotConn = nil
+    end
+    local char = LP.Character
+    local myHRP = char and char:FindFirstChild("HumanoidRootPart")
+    if myHRP then
+        myHRP.AssemblyLinearVelocity = Vector3.new(0, myHRP.AssemblyLinearVelocity.Y, 0)
+    end
+end
+
+-- ==================== MOBILE BUTTON ====================
+
+local function createMobileBatAimbotButton(parent)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 140, 0, 60)
+    btn.Position = UDim2.new(0.5, -70, 0.5, -30) -- Center inside the parent frame
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.Text = "BAT\nLOCK"
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    btn.Parent = parent
+
+    -- Round the button edges
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.Parent = btn
+
+    local isOn = false
+
+    btn.MouseButton1Click:Connect(function()
+        isOn = not isOn
+        State.batAimbotToggled = isOn
+
+        if isOn then
+            btn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+            startBatAimbot()
+        else
+            btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            stopBatAimbot()
+        end
+    end)
+
+    return btn
+end
+
+-- ==================== DRAGGABLE LOGIC ====================
+
+local function makeDraggable(frame)
+    local dragging = false
+    local dragInput, dragStart, startPos
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+end
+
+-- ==================== INITIALIZE UI ====================
+
+local aimbotGui = Instance.new("ScreenGui")
+aimbotGui.Name = "BatAimbotUI"
+aimbotGui.ResetOnSpawn = false
+aimbotGui.Parent = CoreGui
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 160, 0, 80)
+main.Position = UDim2.new(0.5, -80, 0.7, 0)
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+main.Parent = aimbotGui
+
+-- Round the main window edges
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = main
+
+makeDraggable(main)
+createMobileBatAimbotButton(main)
