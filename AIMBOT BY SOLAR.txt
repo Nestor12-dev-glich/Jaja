@@ -1,0 +1,27 @@
+-- © 2026 discord.gg/freesources || discord.gg/utuMMTUuFw (Permanent link)
+-- if another person or group is leaking or reselling this report it to our server
+-- LEAKED BY SOLAR BABY ( @solarowner_ ) --
+
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Aimbot All Tool : ON",
+    Text = "Made by Solar Hub",
+    Duration = 5
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+
+local aimbotEnabled = true
+local aimbotRange = 350
+local aimbotCurrentTarget = nil
+local aimbotRemote = nil
+
+local ScreenGui = Instance.new("ScreenGui")
+local ToggleButton = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+
+ScreenGui.Name = "SolarHub_UI"
+if syn and 
