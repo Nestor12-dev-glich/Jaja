@@ -1,0 +1,1262 @@
+-- NoxyHub.lua
+
+repeat task.wait() until game:IsLoaded()
+
+-- ============================================================
+-- INTRO
+-- ============================================================
+do
+    local TweenService = game:GetService("TweenService")
+    local CoreGui      = game:GetService("CoreGui")
+    local SoundService = game:GetService("SoundService")
+    local Lighting     = game:GetService("Lighting")
+    local Players      = game:GetService("Players")
+    local LP           = Players.LocalPlayer
+    if not LP then
+        repeat task.wait(0.1) until Players.LocalPlayer
+        LP = Players.LocalPlayer
+    end
+    local pgui = LP:WaitForChild("PlayerGui", 10)
+
+    for _, n in ipairs({"NoxyIntro", "AdaptHoneypotGui"}) do
+        pcall(function() local o = CoreGui:FindFirstChild(n); if o then o:Destroy() end end)
+        pcall(function() if pgui then local o = pgui:FindFirstChild(n); if o then o:Destroy() end end end)
+    end
+
+    local INTRO_DURATION = 3.6
+    local SONG_VOL       = 0.45
+    local PINK      = Color3.fromRGB(255, 105, 180)
+    local PINK_DARK = Color3.fromRGB(200, 30, 100)
+    local PINK_LIGHT= Color3.fromRGB(255, 200, 230)
+
+    local blur = Instance.new("BlurEffect")
+    blur.Size   = 0
+    blur.Parent = Lighting
+
+    local introGui = Instance.new("ScreenGui")
+    introGui.Name           = "NoxyIntro"
+    introGui.ResetOnSpawn   = false
+    introGui.IgnoreGuiInset = true
+    introGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+    introGui.DisplayOrder   = 999
+    pcall(function() introGui.Parent = CoreGui end)
+    if not introGui.Parent then introGui.Parent = pgui end
+
+    local snd = Instance.new("Sound")
+    snd.SoundId            = "rbxassetid://78617465078185"
+    snd.Volume             = 10
+    snd.Looped             = false
+    snd.RollOffMode        = Enum.RollOffMode.InverseTapered
+    snd.RollOffMinDistance = 10000
+    snd.RollOffMaxDistance = 10000
+    snd.TimePosition       = 5
+    snd.Parent             = SoundService
+    pcall(function() snd:Play() end)
+
+    local tag = Instance.new("TextLabel", introGui)
+    tag.Size                   = UDim2.new(0, 700, 0, 120)
+    tag.Position               = UDim2.new(0.5, 0, -0.3, -20)
+    tag.AnchorPoint            = Vector2.new(0.5, 0.5)
+    tag.BackgroundTransparency = 1
+    tag.Text                   = "NOXY"
+    tag.Font                   = Enum.Font.GothamBlack
+    tag.TextSize               = 110
+    tag.TextColor3             = Color3.fromRGB(255, 255, 255)
+    tag.TextStrokeColor3       = Color3.fromRGB(60, 0, 30)
+    tag.TextStrokeTransparency = 0.3
+    tag.TextXAlignment         = Enum.TextXAlignment.Center
+    tag.TextTransparency       = 0
+    tag.ZIndex                 = 110
+
+    local tagGrad = Instance.new("UIGradient", tag)
+    tagGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0,    PINK_DARK),
+        ColorSequenceKeypoint.new(0.35, PINK),
+        ColorSequenceKeypoint.new(0.5,  PINK_LIGHT),
+        ColorSequenceKeypoint.new(0.65, PINK),
+        ColorSequenceKeypoint.new(1,    PINK_DARK),
+    })
+    tagGrad.Rotation = 0
+
+    local rosaL = Instance.new("TextLabel", introGui)
+    rosaL.Size                   = UDim2.new(0, 24, 0, 24)
+    rosaL.Position               = UDim2.new(0.5, -210, -0.3, 58)
+    rosaL.AnchorPoint            = Vector2.new(0.5, 0.5)
+    rosaL.BackgroundTransparency = 1
+    rosaL.Text                   = "🌸"
+    rosaL.TextSize               = 16
+    rosaL.Font                   = Enum.Font.GothamBold
+    rosaL.ZIndex                 = 112
+
+    local line = Instance.new("Frame", introGui)
+    line.Size                   = UDim2.new(0, 360, 0, 2)
+    line.Position               = UDim2.new(0.5, 0, -0.3, 58)
+    line.AnchorPoint            = Vector2.new(0.5, 0.5)
+    line.BackgroundColor3       = PINK
+    line.BackgroundTransparency = 0
+    line.BorderSizePixel        = 0
+    line.ZIndex                 = 110
+    local lineGrad = Instance.new("UIGradient", line)
+    lineGrad.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0,   0.4),
+        NumberSequenceKeypoint.new(0.5, 0),
+        NumberSequenceKeypoint.new(1,   0.4),
+    })
+
+    local rosaR = Instance.new("TextLabel", introGui)
+    rosaR.Size                   = UDim2.new(0, 24, 0, 24)
+    rosaR.Position               = UDim2.new(0.5, 210, -0.3, 58)
+    rosaR.AnchorPoint            = Vector2.new(0.5, 0.5)
+    rosaR.BackgroundTransparency = 1
+    rosaR.Text                   = "🌸"
+    rosaR.TextSize               = 16
+    rosaR.Font                   = Enum.Font.GothamBold
+    rosaR.ZIndex                 = 112
+
+    local sub = Instance.new("TextLabel", introGui)
+    sub.Size                   = UDim2.new(0, 400, 0, 22)
+    sub.Position               = UDim2.new(0.5, 0, -0.3, 82)
+    sub.AnchorPoint            = Vector2.new(0.5, 0.5)
+    sub.BackgroundTransparency = 1
+    sub.Text                   = "H  U  B"
+    sub.Font                   = Enum.Font.GothamBold
+    sub.TextSize               = 16
+    sub.TextColor3             = PINK_LIGHT
+    sub.TextStrokeColor3       = Color3.fromRGB(0, 0, 0)
+    sub.TextStrokeTransparency = 0.5
+    sub.TextXAlignment         = Enum.TextXAlignment.Center
+    sub.TextTransparency       = 0
+    sub.ZIndex                 = 110
+
+    local madeBy = Instance.new("TextLabel", introGui)
+    madeBy.Size                   = UDim2.new(0, 400, 0, 16)
+    madeBy.Position               = UDim2.new(0.5, 0, -0.3, 112)
+    madeBy.AnchorPoint            = Vector2.new(0.5, 0.5)
+    madeBy.BackgroundTransparency = 1
+    madeBy.Text                   = "Shadow  ·  Chin"
+    madeBy.Font                   = Enum.Font.GothamMedium
+    madeBy.TextSize               = 11
+    madeBy.TextColor3             = Color3.fromRGB(255, 160, 200)
+    madeBy.TextStrokeColor3       = Color3.fromRGB(0, 0, 0)
+    madeBy.TextStrokeTransparency = 0.6
+    madeBy.TextXAlignment         = Enum.TextXAlignment.Center
+    madeBy.TextTransparency       = 0
+    madeBy.ZIndex                 = 110
+
+    TweenService:Create(blur, TweenInfo.new(0.5, Enum.EasingStyle.Quad), {Size = 12}):Play()
+    TweenService:Create(snd,  TweenInfo.new(0.5), {Volume = SONG_VOL}):Play()
+
+    local slideInfo = TweenInfo.new(0.75, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    TweenService:Create(tag,    slideInfo, {Position = UDim2.new(0.5, 0, 0.5, -20)}):Play()
+    TweenService:Create(line,   slideInfo, {Position = UDim2.new(0.5, 0, 0.5, 58)}):Play()
+    TweenService:Create(rosaL,  slideInfo, {Position = UDim2.new(0.5, -210, 0.5, 58)}):Play()
+    TweenService:Create(rosaR,  slideInfo, {Position = UDim2.new(0.5, 210, 0.5, 58)}):Play()
+    TweenService:Create(sub,    slideInfo, {Position = UDim2.new(0.5, 0, 0.5, 82)}):Play()
+    TweenService:Create(madeBy, slideInfo, {Position = UDim2.new(0.5, 0, 0.5, 112)}):Play()
+
+    local sweepActive = true
+    task.spawn(function()
+        local off = -0.5
+        while sweepActive do
+            off = off + 0.008
+            if off > 1.5 then off = -0.5 end
+            tagGrad.Offset = Vector2.new(off, 0)
+            task.wait()
+        end
+    end)
+
+    task.wait(INTRO_DURATION - 0.5)
+
+    sweepActive = false
+    local exitInfo = TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+    TweenService:Create(tag,    exitInfo, {TextTransparency = 1}):Play()
+    TweenService:Create(sub,    exitInfo, {TextTransparency = 1}):Play()
+    TweenService:Create(madeBy, exitInfo, {TextTransparency = 1}):Play()
+    TweenService:Create(line,   exitInfo, {BackgroundTransparency = 1}):Play()
+    TweenService:Create(rosaL,  exitInfo, {TextTransparency = 1}):Play()
+    TweenService:Create(rosaR,  exitInfo, {TextTransparency = 1}):Play()
+    TweenService:Create(snd,    TweenInfo.new(0.6), {Volume = 0}):Play()
+    TweenService:Create(blur,   exitInfo, {Size = 0}):Play()
+
+    task.wait(0.65)
+    pcall(function() snd:Stop(); snd:Destroy() end)
+    pcall(function() blur:Destroy() end)
+    pcall(function() introGui:Destroy() end)
+end
+
+-- ============================================================
+-- Noxy | Hub v5.3 - BLACK THEME + TAB SYSTEM
+-- ============================================================
+
+local Players         = game:GetService("Players")
+local RunService      = game:GetService("RunService")
+local UIS             = game:GetService("UserInputService")
+local TweenService    = game:GetService("TweenService")
+local HttpService     = game:GetService("HttpService")
+local Lighting        = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LP              = Players.LocalPlayer
+
+local _isfile   = isfile   or (syn and syn.isfile)   or function() return false end
+local _readfile = readfile  or (syn and syn.readfile)  or function() return nil  end
+local _writefile= writefile or (syn and syn.writefile) or function() end
+local getconnections = getconnections or get_signal_cons or getconnects or (syn and syn.get_signal_cons)
+
+-- ============================================================
+-- STATE
+-- ============================================================
+local State = {
+    normalSpeed=59, carrySpeed=29, laggerSpeed=60, normalLaggerSpeed=100,
+    speedMode = 0,
+    laggerMode = 0,
+    lastLaggerMode = 1,
+    infJumpEnabled=false, antiRagdollEnabled=false, fpsBoostEnabled=false,
+    guiVisible=true, uiLocked=false,
+    isStealing=false, stealStartTime=nil, lastStealTick=0,
+    medusaLastUsed=0, medusaDebounce=false, medusaCounterEnabled=false, antiMedusaEnabled=false,
+    noCollideEnabled=false,
+    batCounterEnabled=false, batCounterDebounce=false,
+    dropEnabled=false,
+    lastMoveDir=Vector3.new(0,0,0),
+    unwalkEnabled=false,
+    autoStealEnabled=false,
+    countdownActive=false,
+    fovEnabled=true,
+    ragdollCountdownEnabled=false,
+    tryhardAnimEnabled=false,
+    nightModeEnabled=true,
+    autoLeftEnabled=false,
+    autoRightEnabled=false,
+    gameTheme = 0,
+    removeAccEnabled=true,
+    fpsBoostEnabled=true,
+    uiLocked=false,
+    batAimbotToggled = false,
+    autoSwingEnabled = true,
+    hittingCooldown = false,
+    stealsCount = 0,
+    AimbotSpeed = 56.5,
+    HitDistance = 5,
+    SwingCooldown = 0.08,
+    aimbotConnection = nil
+}
+
+local Keys = {
+    speed      = Enum.KeyCode.Q,
+    lagger     = Enum.KeyCode.R,
+    drop       = Enum.KeyCode.H,
+    tpDown     = Enum.KeyCode.V,
+    aimbot     = Enum.KeyCode.E,
+    unwalk     = Enum.KeyCode.U,
+    autoLeft   = Enum.KeyCode.Z,
+    autoRight  = Enum.KeyCode.C,
+    guiHide    = Enum.KeyCode.LeftControl,
+    instaReset = Enum.KeyCode.G,
+}
+
+local Steal = {
+    AutoStealEnabled=false, StealRadius=20, StealDuration=1.30,
+    Data={}, plotCache={}, plotCacheTime={}, cachedPrompts={}, promptCacheTime=0,
+}
+
+local CONFIG_FILE = "vulcanHubConfig.json"
+local Conns={autoSteal=nil,antiRag=nil,aimbot=nil,anchor={},progress=nil,batCounter=nil,unwalk=nil,noCollideLoop=nil,antiMedusa=nil,input=nil}
+
+if _G.NoxyConnections then
+    for _, conn in pairs(_G.NoxyConnections) do
+        pcall(function() conn:Disconnect() end)
+    end
+end
+_G.NoxyConnections = {}
+local function trackConn(c) table.insert(_G.NoxyConnections, c); return c end
+local MEDUSA_COOLDOWN=25
+local DROP_AUTO_OFF_DELAY=0.15
+local isTouchEnabled = UIS.TouchEnabled
+local duelLaggerWaitTime = isTouchEnabled and 5.8 or 0.25
+local h,hrp
+local speedBoxRefs={}
+local keybindBtnRefs={}
+local toggleRefs={}
+
+local speedModeNames = {[0] = "Normal Speed", [1] = "Carry Speed"}
+local laggerModeNames = {[1] = "Carry Speed", [2] = "Normal Speed"}
+local themeNames = {[0] = "Dark", [1] = "Vermelho", [2] = "Roxo", [3] = "Azul", [4] = "Ciano", [5] = "Branco"}
+
+local function updateSpeedUI()
+    if toggleRefs.speedCycleLabel then
+        local modeText = speedModeNames[State.speedMode] or "Normal Speed"
+        toggleRefs.speedCycleLabel.Text = modeText
+        toggleRefs.speedCycleLabel.TextColor3 = (State.laggerMode == 0) and C.text or C.textSub
+    end
+    if toggleRefs.laggerCycleLabel then
+        local modeText = laggerModeNames[State.lastLaggerMode] or "Carry Speed"
+        toggleRefs.laggerCycleLabel.Text = modeText
+        toggleRefs.laggerCycleLabel.TextColor3 = (State.laggerMode ~= 0) and C.text or C.textSub
+        toggleRefs.laggerCycleLabel.Parent.valText.Text = modeText
+    end
+end
+
+local function applyTheme()
+    local cc = Lighting:FindFirstChild("NoxyColorCC")
+    if not cc then
+        cc = Instance.new("ColorCorrectionEffect")
+        cc.Name = "NoxyColorCC"
+        cc.Parent = Lighting
+    end
+
+    if not State.nightModeEnabled then
+        local s = Lighting:FindFirstChild("vulcanDarkSky"); if s then s:Destroy() end
+        cc.Enabled = false
+        Lighting.ClockTime = 14
+        Lighting.Brightness = 2
+        Lighting.ExposureCompensation = 0
+        Lighting.OutdoorAmbient = Color3.fromRGB(127, 127, 127)
+        Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+        return
+    end
+
+    cc.Enabled = true
+    local theme = State.gameTheme
+
+    local sky = Lighting:FindFirstChild("vulcanDarkSky") or Instance.new("Sky")
+    sky.Name = "vulcanDarkSky"
+    sky.SkyboxBk = "rbxassetid://159454299"; sky.SkyboxDn = "rbxassetid://159454296"
+    sky.SkyboxFt = "rbxassetid://159454293"; sky.SkyboxLf = "rbxassetid://159454286"
+    sky.SkyboxRt = "rbxassetid://159454289"; sky.SkyboxUp = "rbxassetid://159454291"
+    sky.Parent = Lighting
+
+    Lighting.ClockTime = 0
+    Lighting.Brightness = 0
+    Lighting.ExposureCompensation = -1.5
+    Lighting.Ambient = Color3.fromRGB(0, 0, 0)
+
+    if theme == 0 then
+        Lighting.OutdoorAmbient = Color3.fromRGB(0, 0, 0)
+        cc.TintColor = Color3.fromRGB(255, 255, 255)
+        cc.Saturation = 0.5
+    elseif theme == 1 then
+        Lighting.OutdoorAmbient = Color3.fromRGB(180, 0, 0)
+        cc.TintColor = Color3.fromRGB(255, 80, 80)
+        cc.Saturation = 0.6
+    elseif theme == 2 then
+        Lighting.OutdoorAmbient = Color3.fromRGB(150, 0, 180)
+        cc.TintColor = Color3.fromRGB(180, 80, 255)
+        cc.Saturation = 0.6
+    elseif theme == 3 then
+        Lighting.OutdoorAmbient = Color3.fromRGB(0, 50, 200)
+        cc.TintColor = Color3.fromRGB(80, 150, 255)
+        cc.Saturation = 0.6
+    elseif theme == 4 then
+        Lighting.OutdoorAmbient = Color3.fromRGB(0, 180, 180)
+        cc.TintColor = Color3.fromRGB(80, 255, 255)
+        cc.Saturation = 0.6
+    elseif theme == 5 then
+        local s = Lighting:FindFirstChild("vulcanDarkSky"); if s then s:Destroy() end
+        Lighting.ClockTime = 12
+        Lighting.Brightness = 2
+        Lighting.ExposureCompensation = 0
+        Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+        Lighting.Ambient = Color3.fromRGB(150, 150, 150)
+        cc.TintColor = Color3.fromRGB(255, 255, 255)
+        cc.Saturation = 1.0
+    end
+end
+
+local function updateThemeUI()
+    if toggleRefs.themeCycleLabel then
+        toggleRefs.themeCycleLabel.Text = themeNames[State.gameTheme] or "Dark"
+    end
+end
+
+local setCustomAnims
+local startUnwalk, stopUnwalk
+local startBatCounter, stopBatCounter
+local startBatAimbot, stopBatAimbot
+local startAutoSteal, stopAutoSteal
+local setupMedusaCounter, stopMedusaCounter
+local applyFPSBoost
+local doTpDown, doInstaReset, runDropBrainrot, toggleDuelLagger
+
+-- ============================================================
+-- HELPER FUNCTIONS
+-- ============================================================
+local function getKeyName(kc)
+    local n = kc.Name
+    if n == "Unknown" then return "-" end
+    if n == "LeftControl" then return "CTRL" end
+    if n == "RightControl" then return "RCTL" end
+    if n == "LeftShift" then return "SHFT" end
+    if n == "Space" then return "SPC" end
+    return n:sub(1, 4):upper()
+end
+
+-- ============================================================
+-- CONFIG SAVE/LOAD
+-- ============================================================
+local function saveConfig()
+    local cfg = {
+        normalSpeed = State.normalSpeed, carrySpeed = State.carrySpeed,
+        laggerSpeed = State.laggerSpeed, normalLaggerSpeed = State.normalLaggerSpeed,
+        stealRadius = Steal.StealRadius, stealDuration = Steal.StealDuration,
+        speedKey = Keys.speed.Name, guiHideKey = Keys.guiHide.Name, dropKey = Keys.drop.Name,
+        tpDownKey = Keys.tpDown.Name, aimbotKey = Keys.aimbot.Name,
+        autoLeftKey = Keys.autoLeft.Name, autoRightKey = Keys.autoRight.Name,
+        laggerKey = Keys.lagger.Name,
+        instaResetKey = Keys.instaReset.Name,
+        autoStealEnabled = State.autoStealEnabled, antiRagdollEnabled = State.antiRagdollEnabled,
+        infJumpEnabled = State.infJumpEnabled, medusaCounterEnabled = State.medusaCounterEnabled,
+        batAimbotToggled = State.batAimbotToggled, noCollideEnabled = State.noCollideEnabled,
+        batCounterEnabled = State.batCounterEnabled, unwalkEnabled = State.unwalkEnabled,
+        fpsBoostEnabled = State.fpsBoostEnabled, uiLocked = State.uiLocked,
+        fovEnabled = State.fovEnabled, tryhardAnimEnabled = State.tryhardAnimEnabled,
+        ragdollCountdownEnabled = State.ragdollCountdownEnabled,
+        nightModeEnabled = State.nightModeEnabled, removeAccEnabled = State.removeAccEnabled,
+        gameTheme = State.gameTheme,
+        speedMode = State.speedMode, laggerMode = State.laggerMode,
+    }
+    local ok, enc = pcall(function() return HttpService:JSONEncode(cfg) end)
+    if ok and enc then pcall(function() _writefile(CONFIG_FILE, enc) end) end
+end
+
+local function loadConfig()
+    local has = false
+    pcall(function() has = _isfile(CONFIG_FILE) end)
+    if not has then return end
+    local raw
+    pcall(function() raw = _readfile(CONFIG_FILE) end)
+    if not raw then return end
+    local cfg
+    local ok = pcall(function() cfg = HttpService:JSONDecode(raw) end)
+    if not ok or not cfg then return end
+    if cfg.normalSpeed then State.normalSpeed = cfg.normalSpeed end
+    if cfg.carrySpeed then State.carrySpeed = cfg.carrySpeed end
+    if cfg.laggerSpeed then State.laggerSpeed = cfg.laggerSpeed end
+    if cfg.normalLaggerSpeed then State.normalLaggerSpeed = cfg.normalLaggerSpeed end
+    if cfg.stealRadius then Steal.StealRadius = cfg.stealRadius end
+    if cfg.stealDuration then Steal.StealDuration = cfg.stealDuration end
+    if cfg.autoStealEnabled ~= nil then State.autoStealEnabled = cfg.autoStealEnabled; Steal.AutoStealEnabled = cfg.autoStealEnabled end
+    if cfg.antiRagdollEnabled ~= nil then State.antiRagdollEnabled = cfg.antiRagdollEnabled end
+    if cfg.infJumpEnabled ~= nil then State.infJumpEnabled = cfg.infJumpEnabled end
+    if cfg.medusaCounterEnabled ~= nil then State.medusaCounterEnabled = cfg.medusaCounterEnabled end
+    if cfg.antiMedusaEnabled ~= nil then State.antiMedusaEnabled = cfg.antiMedusaEnabled end
+    if cfg.batAimbotToggled ~= nil then State.batAimbotToggled = cfg.batAimbotToggled end
+    if cfg.noCollideEnabled ~= nil then State.noCollideEnabled = cfg.noCollideEnabled end
+    if cfg.batCounterEnabled ~= nil then State.batCounterEnabled = cfg.batCounterEnabled end
+    if cfg.unwalkEnabled ~= nil then State.unwalkEnabled = cfg.unwalkEnabled end
+    if cfg.fpsBoostEnabled ~= nil then State.fpsBoostEnabled = cfg.fpsBoostEnabled end
+    if cfg.uiLocked ~= nil then State.uiLocked = cfg.uiLocked end
+    if cfg.fovEnabled ~= nil then State.fovEnabled = cfg.fovEnabled end
+    if cfg.ragdollCountdownEnabled ~= nil then State.ragdollCountdownEnabled = cfg.ragdollCountdownEnabled end
+    if cfg.tryhardAnimEnabled ~= nil then State.tryhardAnimEnabled = cfg.tryhardAnimEnabled end
+    if cfg.nightModeEnabled ~= nil then State.nightModeEnabled = cfg.nightModeEnabled end
+    if cfg.gameTheme ~= nil then State.gameTheme = cfg.gameTheme end
+    if cfg.removeAccEnabled ~= nil then State.removeAccEnabled = cfg.removeAccEnabled end
+    if cfg.speedMode then State.speedMode = cfg.speedMode end
+    if cfg.laggerMode then State.laggerMode = cfg.laggerMode end
+    local function tryKey(field, kt)
+        if cfg[field] and Enum.KeyCode[cfg[field]] then Keys[kt] = Enum.KeyCode[cfg[field]] end
+    end
+    tryKey("speedKey","speed") tryKey("laggerKey","lagger") tryKey("guiHideKey","guiHide") tryKey("dropKey","drop")
+    tryKey("tpDownKey","tpDown") tryKey("aimbotKey","aimbot")
+    tryKey("autoLeftKey","autoLeft") tryKey("autoRightKey","autoRight")
+    tryKey("instaResetKey","instaReset")
+end
+
+loadConfig()
+
+-- ============================================================
+-- CLEANUP + ROOT GUI
+-- ============================================================
+for _,name in pairs({"vulcanHubV5_3","vulcanhubV5_3"}) do
+    pcall(function() local o=game:GetService("CoreGui"):FindFirstChild(name); if o then o:Destroy() end end)
+    pcall(function() local o=LP:WaitForChild("PlayerGui"):FindFirstChild(name); if o then o:Destroy() end end)
+end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "vulcanHubV5_3"
+gui.ResetOnSpawn = false
+gui.DisplayOrder = 999
+gui.IgnoreGuiInset = true
+pcall(function() if syn and syn.protect_gui then syn.protect_gui(gui) end end)
+pcall(function() gui.Parent = game:GetService("CoreGui") end)
+if not gui.Parent then pcall(function() gui.Parent = LP.PlayerGui end) end
+
+-- ============================================================
+-- COLORS (BLACK + PINK ACCENT)
+-- ============================================================
+local C = {
+    bg          = Color3.fromRGB(28, 12, 18),
+    panel       = Color3.fromRGB(35, 15, 22),
+    card        = Color3.fromRGB(38, 18, 26),
+    cardHov     = Color3.fromRGB(48, 25, 34),
+    border      = Color3.fromRGB(255, 170, 200),
+    borderDim   = Color3.fromRGB(150, 70, 100),
+    text        = Color3.fromRGB(255, 255, 255),
+    textSub     = Color3.fromRGB(255, 190, 210),
+    textDim     = Color3.fromRGB(180, 100, 130),
+    accent      = Color3.fromRGB(255, 170, 200),
+    pillOff     = Color3.fromRGB(50, 25, 35),
+    pillOn      = Color3.fromRGB(255, 170, 200),
+    dotOff      = Color3.fromRGB(100, 50, 70),
+    dotOn       = Color3.fromRGB(28, 12, 18),
+    header      = Color3.fromRGB(20, 8, 12),
+    chipBg      = Color3.fromRGB(255, 170, 200),
+    chipText    = Color3.fromRGB(28, 12, 18),
+    -- Rosa bebê para tab ativa
+    tabActive   = Color3.fromRGB(255, 182, 213),
+    tabInactive = Color3.fromRGB(20, 8, 12),
+}
+
+-- ============================================================
+-- UI HELPERS
+-- ============================================================
+local function mkCorner(p,r) local c=Instance.new("UICorner",p); c.CornerRadius=UDim.new(0,r or 6); return c end
+local function mkStroke(p,col,th)
+    local s=Instance.new("UIStroke",p); s.Color=col or C.border; s.Thickness=th or 1
+    s.ApplyStrokeMode=Enum.ApplyStrokeMode.Border; return s
+end
+
+local function makeDraggable(frame, handle, force)
+    local src=handle or frame
+    local dragging,dragInput,dragStart,startPos=false,nil,nil,nil
+    src.InputBegan:Connect(function(inp)
+        if State.uiLocked and not force then return end
+        if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
+            dragging=true; dragStart=inp.Position; startPos=frame.Position
+            inp.Changed:Connect(function() if inp.UserInputState==Enum.UserInputState.End then dragging=false end end)
+        end
+    end)
+    src.InputChanged:Connect(function(inp)
+        if inp.UserInputType==Enum.UserInputType.MouseMovement or inp.UserInputType==Enum.UserInputType.Touch then dragInput=inp end
+    end)
+    UIS.InputChanged:Connect(function(inp)
+        if inp==dragInput and dragging and (force or not State.uiLocked) then
+            local dx=inp.Position.X-dragStart.X; local dy=inp.Position.Y-dragStart.Y
+            frame.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+dx,startPos.Y.Scale,startPos.Y.Offset+dy)
+        end
+    end)
+end
+
+-- ============================================================
+-- MAIN WINDOW
+-- ============================================================
+local WIN_W = 380
+local WIN_H = 560
+local HEADER_H = 44
+local TAB_H = 48
+
+local mainOuter = Instance.new("Frame", gui)
+mainOuter.Name = "MainOuter"
+mainOuter.Size = UDim2.new(0, WIN_W, 0, WIN_H)
+mainOuter.Position = UDim2.new(0, 8, 0, 8)
+mainOuter.BackgroundColor3 = C.bg
+mainOuter.BackgroundTransparency = 0
+mainOuter.BorderSizePixel = 0
+mainOuter.ClipsDescendants = true
+mkCorner(mainOuter, 10)
+mkStroke(mainOuter, C.border, 1)
+makeDraggable(mainOuter)
+
+-- Background Image
+local BG_ASSET_ID = "rbxthumb://type=Asset&id=78818154082519&w=768&h=432"
+local bgImage = Instance.new("ImageLabel", mainOuter)
+bgImage.Name = "BgImage"
+bgImage.Size = UDim2.new(1, 0, 1, 0)
+bgImage.Position = UDim2.new(0, 0, 0, 0)
+bgImage.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+bgImage.BackgroundTransparency = 1
+bgImage.BorderSizePixel = 0
+bgImage.Image = BG_ASSET_ID
+bgImage.ImageTransparency = 1
+bgImage.ScaleType = Enum.ScaleType.Crop
+bgImage.ZIndex = 1
+
+-- Header
+local headerFrame = Instance.new("Frame", mainOuter)
+headerFrame.Size = UDim2.new(1, 0, 0, 60)
+headerFrame.BackgroundTransparency = 1
+headerFrame.ZIndex = 5
+
+local logoFrame = Instance.new("Frame", headerFrame)
+logoFrame.Size = UDim2.new(0, 40, 0, 40)
+logoFrame.Position = UDim2.new(0, 14, 0.5, -20)
+logoFrame.BackgroundColor3 = C.bg
+logoFrame.ZIndex = 6
+mkCorner(logoFrame, 8)
+mkStroke(logoFrame, C.border, 1)
+
+local logoTxt = Instance.new("TextLabel", logoFrame)
+logoTxt.Size = UDim2.new(1, 0, 1, 0)
+logoTxt.BackgroundTransparency = 1
+logoTxt.Text = "N"
+logoTxt.TextColor3 = C.accent
+logoTxt.Font = Enum.Font.GothamBlack
+logoTxt.TextSize = 22
+logoTxt.ZIndex = 7
+
+local titleLabel = Instance.new("TextLabel", headerFrame)
+titleLabel.Size = UDim2.new(0, 200, 0, 20)
+titleLabel.Position = UDim2.new(0, 64, 0.5, -16)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "NOXY DUELS"
+titleLabel.TextColor3 = C.text
+titleLabel.Font = Enum.Font.GothamBlack
+titleLabel.TextSize = 14
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.ZIndex = 6
+
+local subTitleLabel = Instance.new("TextLabel", headerFrame)
+subTitleLabel.Size = UDim2.new(0, 200, 0, 16)
+subTitleLabel.Position = UDim2.new(0, 64, 0.5, 2)
+subTitleLabel.BackgroundTransparency = 1
+subTitleLabel.Text = "by chin y shadow"
+subTitleLabel.TextColor3 = C.textDim
+subTitleLabel.Font = Enum.Font.GothamBold
+subTitleLabel.TextSize = 10
+subTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+subTitleLabel.ZIndex = 6
+
+local statsLbl = Instance.new("TextLabel", headerFrame)
+statsLbl.Size = UDim2.new(0, 130, 0, 20)
+statsLbl.Position = UDim2.new(1, -165, 0, 20)
+statsLbl.BackgroundTransparency = 1
+statsLbl.Text = "Ping: -- | FPS: --"
+statsLbl.TextColor3 = Color3.fromRGB(160, 160, 160)
+statsLbl.Font = Enum.Font.GothamBlack
+statsLbl.TextSize = 10
+statsLbl.TextXAlignment = Enum.TextXAlignment.Right
+statsLbl.ZIndex = 6
+
+local minimizeBtn = Instance.new("TextButton", mainOuter)
+minimizeBtn.Size = UDim2.new(0, 24, 0, 24)
+minimizeBtn.Position = UDim2.new(1, -34, 0, 18)
+minimizeBtn.BackgroundColor3 = C.card
+minimizeBtn.BorderSizePixel = 0
+minimizeBtn.Text = "X"
+minimizeBtn.TextColor3 = C.accent
+minimizeBtn.Font = Enum.Font.GothamBlack
+minimizeBtn.TextSize = 12
+minimizeBtn.ZIndex = 10
+mkCorner(minimizeBtn, 6)
+mkStroke(minimizeBtn, C.border, 1)
+minimizeBtn.MouseButton1Click:Connect(function() mainOuter.Visible = false end)
+
+-- ============================================================
+-- TAB BAR (abaixo do header, redondo, rosa bebê ao selecionar)
+-- ============================================================
+local TAB_NAMES = {"Speed", "Combat", "Steal", "Mechan.", "Visual"}
+local tabBtns = {}
+local currentTabIdx = 1
+
+-- Container das tabs (fundo escuro arredondado)
+local tabBarOuter = Instance.new("Frame", mainOuter)
+tabBarOuter.Name = "TabBarOuter"
+tabBarOuter.Size = UDim2.new(1, -20, 0, TAB_H - 6)
+tabBarOuter.Position = UDim2.new(0, 10, 0, 63)
+tabBarOuter.BackgroundColor3 = C.header
+tabBarOuter.BorderSizePixel = 0
+tabBarOuter.ZIndex = 6
+mkCorner(tabBarOuter, 20) -- Bem redondo
+mkStroke(tabBarOuter, C.borderDim, 1)
+
+local tabBarLL = Instance.new("UIListLayout", tabBarOuter)
+tabBarLL.FillDirection = Enum.FillDirection.Horizontal
+tabBarLL.SortOrder = Enum.SortOrder.LayoutOrder
+tabBarLL.Padding = UDim.new(0, 4)
+tabBarLL.HorizontalAlignment = Enum.HorizontalAlignment.Center
+tabBarLL.VerticalAlignment = Enum.VerticalAlignment.Center
+
+local tabPad = Instance.new("UIPadding", tabBarOuter)
+tabPad.PaddingLeft = UDim.new(0, 4)
+tabPad.PaddingRight = UDim.new(0, 4)
+
+-- Páginas de conteúdo (uma por aba)
+local tabPages = {}
+
+local CONTENT_TOP = 63 + TAB_H + 4  -- logo abaixo da barra de tabs
+
+for i, name in ipairs(TAB_NAMES) do
+    -- Botão da aba
+    local btn = Instance.new("TextButton", tabBarOuter)
+    btn.Size = UDim2.new(1/#TAB_NAMES, -4, 1, -8)
+    btn.BackgroundColor3 = (i == 1) and C.tabActive or C.tabInactive
+    btn.BorderSizePixel = 0
+    btn.Text = name
+    btn.TextColor3 = (i == 1) and C.chipText or C.textDim
+    btn.Font = (i == 1) and Enum.Font.GothamBlack or Enum.Font.GothamBold
+    btn.TextSize = 10
+    btn.LayoutOrder = i
+    btn.ZIndex = 8
+    btn.AutoButtonColor = false
+    mkCorner(btn, 16) -- Bem redondo (pílula)
+    tabBtns[i] = btn
+
+    -- Página de conteúdo desta aba
+    local page = Instance.new("ScrollingFrame", mainOuter)
+    page.Name = "TabPage_" .. i
+    page.Size = UDim2.new(1, 0, 1, -(CONTENT_TOP + 6))
+    page.Position = UDim2.new(0, 0, 0, CONTENT_TOP + 6)
+    page.BackgroundTransparency = 1
+    page.BorderSizePixel = 0
+    page.ScrollBarThickness = 2
+    page.ScrollBarImageColor3 = C.accent
+    page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    page.CanvasSize = UDim2.new(0, 0, 0, 0)
+    page.ZIndex = 4
+    page.Visible = (i == 1)
+
+    local ll = Instance.new("UIListLayout", page)
+    ll.SortOrder = Enum.SortOrder.LayoutOrder
+    ll.Padding = UDim.new(0, 8)
+
+    local pad = Instance.new("UIPadding", page)
+    pad.PaddingLeft = UDim.new(0, 14)
+    pad.PaddingRight = UDim.new(0, 14)
+    pad.PaddingTop = UDim.new(0, 10)
+    pad.PaddingBottom = UDim.new(0, 20)
+
+    tabPages[i] = page
+end
+
+-- Função para trocar de aba
+local function setTab(idx)
+    currentTabIdx = idx
+    for i, btn in ipairs(tabBtns) do
+        local active = (i == idx)
+        TweenService:Create(btn, TweenInfo.new(0.18), {
+            BackgroundColor3 = active and C.tabActive or C.tabInactive
+        }):Play()
+        btn.TextColor3 = active and C.chipText or C.textDim
+        btn.Font = active and Enum.Font.GothamBlack or Enum.Font.GothamBold
+    end
+    for i, page in ipairs(tabPages) do
+        page.Visible = (i == idx)
+    end
+end
+
+for i = 1, #TAB_NAMES do
+    local idx = i
+    tabBtns[i].MouseButton1Click:Connect(function() setTab(idx) end)
+end
+
+-- ============================================================
+-- UI COMPONENT BUILDERS (usam tabPages[n] como parent)
+-- ============================================================
+local loCount = 0
+local function LO() loCount = loCount + 1; return loCount end
+
+local function makeSectionHeader(text, parent)
+    local lbl = Instance.new("TextLabel", parent)
+    lbl.Size = UDim2.new(1, 0, 0, 22)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = text:upper()
+    lbl.TextColor3 = C.textDim
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 10
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.LayoutOrder = LO()
+    lbl.ZIndex = 4
+    return lbl
+end
+
+local function makeSpeedRow(label, stateKey, parent)
+    local row = Instance.new("Frame", parent)
+    row.Size = UDim2.new(1, 0, 0, 42)
+    row.BackgroundColor3 = C.card
+    row.BackgroundTransparency = 0.35
+    row.BorderSizePixel = 0
+    row.LayoutOrder = LO()
+    row.ZIndex = 4
+    mkCorner(row, 6)
+    mkStroke(row, C.border, 1)
+
+    local lbl = Instance.new("TextLabel", row)
+    lbl.Size = UDim2.new(0.6, 0, 1, 0)
+    lbl.Position = UDim2.new(0, 12, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = label
+    lbl.TextColor3 = C.text
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 13
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.ZIndex = 5
+
+    local valWrap = Instance.new("Frame", row)
+    valWrap.Size = UDim2.new(0, 70, 0, 28)
+    valWrap.Position = UDim2.new(1, -82, 0.5, -14)
+    valWrap.BackgroundColor3 = C.bg
+    valWrap.BorderSizePixel = 0
+    valWrap.ZIndex = 5
+    mkCorner(valWrap, 4)
+
+    local valBox = Instance.new("TextBox", valWrap)
+    valBox.Size = UDim2.new(1, 0, 1, 0)
+    valBox.BackgroundTransparency = 1
+    valBox.Text = tostring(State[stateKey])
+    valBox.TextColor3 = C.text
+    valBox.Font = Enum.Font.GothamBold
+    valBox.TextSize = 14
+    valBox.ClearTextOnFocus = false
+    valBox.ZIndex = 6
+    valBox.FocusLost:Connect(function()
+        local n = tonumber(valBox.Text)
+        if n and n > 0 and n <= 500 then State[stateKey] = n; valBox.Text = tostring(n)
+        else valBox.Text = tostring(State[stateKey]) end
+        task.spawn(saveConfig)
+    end)
+    speedBoxRefs[stateKey] = valBox
+    return row
+end
+
+local function makeKeybindRow(label, keyRef, parent)
+    local row = Instance.new("Frame", parent)
+    row.Size = UDim2.new(1, 0, 0, 42)
+    row.BackgroundColor3 = C.card
+    row.BackgroundTransparency = 0.35
+    row.BorderSizePixel = 0
+    row.LayoutOrder = LO()
+    row.ZIndex = 4
+    mkCorner(row, 6)
+    mkStroke(row, C.border, 1)
+
+    local lbl = Instance.new("TextLabel", row)
+    lbl.Size = UDim2.new(0.6, 0, 1, 0)
+    lbl.Position = UDim2.new(0, 12, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = label
+    lbl.TextColor3 = C.text
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 13
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.ZIndex = 5
+
+    local btn = Instance.new("TextButton", row)
+    btn.Size = UDim2.new(0, 70, 0, 28)
+    btn.Position = UDim2.new(1, -82, 0.5, -14)
+    btn.BackgroundColor3 = C.bg
+    btn.BorderSizePixel = 0
+    btn.Text = getKeyName(Keys[keyRef] or Enum.KeyCode.Unknown)
+    btn.TextColor3 = C.text
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 13
+    btn.ZIndex = 5
+    mkCorner(btn, 4)
+    keybindBtnRefs[keyRef] = btn
+
+    local listening = false
+    local lkb = nil
+    btn.MouseButton1Click:Connect(function()
+        if listening then
+            listening = false
+            if lkb then lkb:Disconnect(); lkb = nil end
+            btn.Text = getKeyName(Keys[keyRef])
+            return
+        end
+        listening = true
+        btn.Text = "..."
+        lkb = trackConn(UIS.InputBegan:Connect(function(inp)
+            if inp.UserInputType == Enum.UserInputType.Keyboard then
+                Keys[keyRef] = inp.KeyCode
+                btn.Text = getKeyName(inp.KeyCode)
+                listening = false
+                lkb:Disconnect()
+                lkb = nil
+                task.spawn(saveConfig)
+            end
+        end))
+    end)
+    return btn
+end
+
+local function makeCycleRow(label, stateKey, names, onCycle, parent)
+    local row = Instance.new("TextButton", parent)
+    row.Name = "cycleRow_" .. label
+    row.Size = UDim2.new(1, 0, 0, 42)
+    row.BackgroundColor3 = C.card
+    row.BackgroundTransparency = 0.35
+    row.BorderSizePixel = 0
+    row.Text = ""
+    row.AutoButtonColor = true
+    row.LayoutOrder = LO()
+    row.ZIndex = 4
+    mkCorner(row, 6)
+    mkStroke(row, C.border, 1)
+
+    local lbl = Instance.new("TextLabel", row)
+    lbl.Size = UDim2.new(0.6, 0, 1, 0)
+    lbl.Position = UDim2.new(0, 12, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = label
+    lbl.TextColor3 = C.text
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 13
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.ZIndex = 5
+
+    local valText = Instance.new("TextLabel", row)
+    valText.Name = "valText"
+    valText.Size = UDim2.new(0.6, 0, 1, 0)
+    valText.AnchorPoint = Vector2.new(1, 0.5)
+    valText.Position = UDim2.new(1, -12, 0.5, 0)
+    valText.BackgroundTransparency = 1
+    valText.Text = names[State[stateKey]] or "Normal Speed"
+    valText.TextColor3 = C.text
+    valText.Font = Enum.Font.GothamBold
+    valText.TextSize = 13
+    valText.TextXAlignment = Enum.TextXAlignment.Right
+    valText.ZIndex = 5
+
+    row.MouseButton1Click:Connect(function() onCycle() end)
+    return valText
+end
+
+local function makeToggleRow(label, defaultOn, onToggle, keyRef, parent)
+    local row = Instance.new("TextButton", parent)
+    row.Size = UDim2.new(1, 0, 0, 42)
+    row.BackgroundColor3 = C.card
+    row.BackgroundTransparency = 0.35
+    row.BorderSizePixel = 0
+    row.Text = ""
+    row.AutoButtonColor = true
+    row.LayoutOrder = LO()
+    row.ZIndex = 4
+    mkCorner(row, 6)
+    mkStroke(row, C.border, 1)
+
+    local lbl = Instance.new("TextLabel", row)
+    lbl.Size = UDim2.new(1, -60, 1, 0)
+    lbl.Position = UDim2.new(0, 12, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = label
+    lbl.TextColor3 = defaultOn and C.text or C.textSub
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 13
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.ZIndex = 5
+
+    local switchBg = Instance.new("Frame", row)
+    switchBg.Size = UDim2.new(0, 34, 0, 18)
+    switchBg.Position = UDim2.new(1, -46, 0.5, -9)
+    switchBg.BackgroundColor3 = defaultOn and C.pillOn or C.pillOff
+    switchBg.BorderSizePixel = 0
+    switchBg.ZIndex = 5
+    mkCorner(switchBg, 9)
+
+    local switchDot = Instance.new("Frame", switchBg)
+    switchDot.Size = UDim2.new(0, 14, 0, 14)
+    switchDot.Position = UDim2.new(defaultOn and 1 or 0, defaultOn and -16 or 2, 0.5, -7)
+    switchDot.BackgroundColor3 = defaultOn and C.dotOn or C.dotOff
+    switchDot.BorderSizePixel = 0
+    switchDot.ZIndex = 6
+    mkCorner(switchDot, 7)
+
+    if keyRef and Keys[keyRef] then
+        local btn = Instance.new("TextButton", row)
+        btn.Size = UDim2.new(0, 50, 0, 24)
+        btn.Position = UDim2.new(1, -104, 0.5, -12)
+        btn.BackgroundColor3 = C.bg
+        btn.BorderSizePixel = 0
+        btn.Text = getKeyName(Keys[keyRef])
+        btn.TextColor3 = C.text
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 11
+        btn.ZIndex = 6
+        mkCorner(btn, 4)
+        keybindBtnRefs[keyRef] = btn
+
+        local listening = false
+        local lkb = nil
+        btn.MouseButton1Click:Connect(function()
+            if listening then
+                listening = false
+                if lkb then lkb:Disconnect(); lkb = nil end
+                btn.Text = getKeyName(Keys[keyRef])
+                return
+            end
+            listening = true
+            btn.Text = "..."
+            lkb = trackConn(UIS.InputBegan:Connect(function(inp)
+                if inp.UserInputType == Enum.UserInputType.Keyboard then
+                    Keys[keyRef] = inp.KeyCode
+                    btn.Text = getKeyName(inp.KeyCode)
+                    listening = false
+                    lkb:Disconnect()
+                    lkb = nil
+                    task.spawn(saveConfig)
+                end
+            end))
+        end)
+    end
+
+    local toggled = defaultOn
+    local function set(on, noAnim)
+        toggled = on
+        lbl.TextColor3 = toggled and C.text or C.textSub
+        if noAnim then
+            switchBg.BackgroundColor3 = toggled and C.pillOn or C.pillOff
+            switchDot.Position = UDim2.new(toggled and 1 or 0, toggled and -16 or 2, 0.5, -7)
+            switchDot.BackgroundColor3 = toggled and C.dotOn or C.dotOff
+        else
+            TweenService:Create(switchBg, TweenInfo.new(0.2), {BackgroundColor3 = toggled and C.pillOn or C.pillOff}):Play()
+            TweenService:Create(switchDot, TweenInfo.new(0.2), {
+                Position = UDim2.new(toggled and 1 or 0, toggled and -16 or 2, 0.5, -7),
+                BackgroundColor3 = toggled and C.dotOn or C.dotOff
+            }):Play()
+        end
+        onToggle(toggled, noAnim)
+    end
+    row.MouseButton1Click:Connect(function() set(not toggled) end)
+    return set, lbl
+end
+
+local function makeMomentaryRow(label, onTrigger, keyRef, parent)
+    local row = Instance.new("TextButton", parent)
+    row.Size = UDim2.new(1, 0, 0, 42)
+    row.BackgroundColor3 = C.card
+    row.BackgroundTransparency = 0.35
+    row.BorderSizePixel = 0
+    row.Text = ""
+    row.AutoButtonColor = true
+    row.LayoutOrder = LO()
+    row.ZIndex = 4
+    mkCorner(row, 6)
+    mkStroke(row, C.border, 1)
+
+    local lbl = Instance.new("TextLabel", row)
+    lbl.Size = UDim2.new(1, -60, 1, 0)
+    lbl.Position = UDim2.new(0, 12, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = label
+    lbl.TextColor3 = C.text
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 13
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.ZIndex = 5
+
+    local switchBg = Instance.new("Frame", row)
+    switchBg.Size = UDim2.new(0, 34, 0, 18)
+    switchBg.Position = UDim2.new(1, -46, 0.5, -9)
+    switchBg.BackgroundColor3 = C.pillOff
+    switchBg.BorderSizePixel = 0
+    switchBg.ZIndex = 5
+    mkCorner(switchBg, 9)
+
+    local switchDot = Instance.new("Frame", switchBg)
+    switchDot.Size = UDim2.new(0, 14, 0, 14)
+    switchDot.Position = UDim2.new(0, 2, 0.5, -7)
+    switchDot.BackgroundColor3 = C.dotOff
+    switchDot.BorderSizePixel = 0
+    switchDot.ZIndex = 6
+    mkCorner(switchDot, 7)
+
+    if keyRef and Keys[keyRef] then
+        local btn = Instance.new("TextButton", row)
+        btn.Size = UDim2.new(0, 50, 0, 24)
+        btn.Position = UDim2.new(1, -104, 0.5, -12)
+        btn.BackgroundColor3 = C.bg
+        btn.BorderSizePixel = 0
+        btn.Text = getKeyName(Keys[keyRef])
+        btn.TextColor3 = C.text
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 11
+        btn.ZIndex = 6
+        mkCorner(btn, 4)
+        keybindBtnRefs[keyRef] = btn
+
+        local listening = false
+        local lkb = nil
+        btn.MouseButton1Click:Connect(function()
+            if listening then
+                listening = false
+                if lkb then lkb:Disconnect(); lkb = nil end
+                btn.Text = getKeyName(Keys[keyRef])
+                return
+            end
+            listening = true
+            btn.Text = "..."
+            lkb = trackConn(UIS.InputBegan:Connect(function(inp)
+                if inp.UserInputType == Enum.UserInputType.Keyboard then
+                    Keys[keyRef] = inp.KeyCode
+                    btn.Text = getKeyName(inp.KeyCode)
+                    listening = false
+                    lkb:Disconnect()
+                    lkb = nil
+                    task.spawn(saveConfig)
+                end
+            end))
+        end)
+    end
+
+    local function trigger()
+        TweenService:Create(switchBg, TweenInfo.new(0.1), {BackgroundColor3 = C.pillOn}):Play()
+        TweenService:Create(switchDot, TweenInfo.new(0.1), {
+            Position = UDim2.new(1, -16, 0.5, -7),
+            BackgroundColor3 = C.dotOn
+        }):Play()
+        onTrigger()
+        task.delay(0.15, function()
+            TweenService:Create(switchBg, TweenInfo.new(0.1), {BackgroundColor3 = C.pillOff}):Play()
+            TweenService:Create(switchDot, TweenInfo.new(0.1), {
+                Position = UDim2.new(0, 2, 0.5, -7),
+                BackgroundColor3 = C.dotOff
+            }):Play()
+        end)
+    end
+
+    row.MouseButton1Click:Connect(trigger)
+    return trigger
+end
+
+local function makeInputRow(label, defaultVal, onEnter, parent)
+    local row = Instance.new("Frame", parent)
+    row.Size = UDim2.new(1, 0, 0, 50)
+    row.BackgroundColor3 = C.card
+    row.BackgroundTransparency = 0.35
+    row.BorderSizePixel = 0
+    row.LayoutOrder = LO()
+    row.ZIndex = 4
+    mkCorner(row, 8)
+    mkStroke(row, C.border, 1)
+
+    local title = Instance.new("TextLabel", row)
+    title.Size = UDim2.new(0.6, 0, 1, 0)
+    title.Position = UDim2.new(0, 14, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = label
+    title.TextColor3 = C.text
+    title.Font = Enum.Font.GothamBlack
+    title.TextSize = 14
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.ZIndex = 5
+
+    local valWrap = Instance.new("Frame", row)
+    valWrap.Size = UDim2.new(0, 86, 0, 32)
+    valWrap.Position = UDim2.new(1, -98, 0.5, -16)
+    valWrap.BackgroundColor3 = C.bg
+    valWrap.BorderSizePixel = 0
+    valWrap.ZIndex = 5
+    mkCorner(valWrap, 6)
+    mkStroke(valWrap, C.border, 1)
+
+    local valBox = Instance.new("TextBox", valWrap)
+    valBox.Size = UDim2.new(1, 0, 1, 0)
+    valBox.BackgroundTransparency = 1
+    valBox.Text = tostring(defaultVal)
+    valBox.TextColor3 = C.text
+    valBox.Font = Enum.Font.FredokaOne
+    valBox.TextSize = 15
+    valBox.ClearTextOnFocus = false
+    valBox.ZIndex = 6
+    valBox.FocusLost:Connect(function()
+        local n = tonumber(valBox.Text)
+        if n then onEnter(n) end
+    end)
+    return valBox
+end
+
+-- ============================================================
+-- POPULATE TABS
+-- ============================================================
+
+-- ABA 1: SPEED
+local p1 = tabPages[1]
+makeSectionHeader("SPEED", p1)
+makeSpeedRow("Normal Speed", "normalSpeed", p1)
+makeSpeedRow("Carry Speed", "carrySpeed", p1)
+makeKeybindRow("Speed Toggle", "speed", p1)
+toggleRefs.speedCycleLabel = makeCycleRow("Mode", "speedMode", speedModeNames, function()
+    State.speedMode = (State.speedMode + 1) % 2
+    State.laggerMode = 0
+    updateSpeedUI()
+    task.spawn(saveConfig)
+end, p1)
+
+local spacer1 = Instance.new("Frame", p1)
+spacer1.Size = UDim2.new(1, 0, 0, 6)
+spacer1.BackgroundTransparency = 1
+spacer1.LayoutOrder = LO()
+
+makeSectionHeader("LAGGER SPEED", p1)
+makeSpeedRow("Normal Speed", "normalLaggerSpeed", p1)
+makeSpeedRow("Carry Speed", "laggerSpeed", p1)
+makeKeybindRow("Lagger Toggle", "lagger", p1)
+toggleRefs.laggerCycleLabel = makeCycleRow("Mode", "lastLaggerMode", laggerModeNames, function()
+    State.lastLaggerMode = (State.lastLaggerMode == 1 and 2 or 1)
+    if State.laggerMode ~= 0 then
+        State.laggerMode = State.lastLaggerMode
+    end
+    updateSpeedUI()
+    task.spawn(saveConfig)
+end, p1)
+
+-- ABA 2: COMBAT
+local p2 = tabPages[2]
+makeSectionHeader("COMBAT", p2)
+toggleRefs.aimbot = makeToggleRow("Aimbot", State.batAimbotToggled, function(on, isSync)
+    State.batAimbotToggled = on
+    if on then pcall(startBatAimbot) else stopBatAimbot() end
+    if not isSync then task.spawn(saveConfig) end
+end, "aimbot", p2)
+
+toggleRefs.medusaCounter = makeToggleRow("Medusa Counter", State.medusaCounterEnabled, function(on, isSync)
+    State.medusaCounterEnabled = on
+    if on then setupMedusaCounter(LP.Character) else stopMedusaCounter() end
+    if not isSync then task.spawn(saveConfig) end
+end, nil, p2)
+
+toggleRefs.batCounter = makeToggleRow("Bat Counter", State.batCounterEnabled, function(on, isSync)
+    State.batCounterEnabled = on
+    if on then startBatCounter() else stopBatCounter() end
+    if not isSync then task.spawn(saveConfig) end
+end, nil, p2)
+
+-- ABA 3: STEAL
+local p3 = tabPages[3]
+makeSectionHeader("STEAL", p3)
+toggleRefs.autoSteal = makeToggleRow("Auto Steal", State.autoStealEnabled, function(on, isSync)
+    Steal.AutoStealEnabled = on; State.autoStealEnabled = on
+    if on then pcall(startAutoSteal) else stopAutoSteal() end
+    if not isSync then task.spawn(saveConfig) end
+end, nil, p3)
+
+makeInputRow("Steal Radius", Steal.StealRadius, function(n)
+    if n >= 5 and n <= 300 then Steal.StealRadius = math.floor(n); task.spawn(saveConfig) end
+end, p3)
+
+-- ABA 4: MECHANICS
+local p4 = tabPages[4]
+makeSectionHeader("MECHANICS", p4)
+makeMomentaryRow("Drop Brainrot", function() runDropBrainrot() end, "drop", p4)
+makeMomentaryRow("TP Down", function() doTpDown() end, "tpDown", p4)
+makeMomentaryRow("Insta Reset", function() doInstaReset() end, "instaReset", p4)
+
+toggleRefs.antiRagdoll = makeToggleRow("Anti Ragdoll", State.antiRagdollEnabled, function(on, isSync)
+    State.antiRagdollEnabled = on
+    _G.antiRagdollEnabled = on
+    if not isSync then task.spawn(saveConfig) end
+end, nil, p4)
+
+toggleRefs.infJump = makeToggleRow("Infinite Jump", State.infJumpEnabled, function(on, isSync)
+    State.infJumpEnabled = on; if not isSync then task.spawn(saveConfig) end
+end, nil, p4)
+
+toggleRefs.unwalk = makeToggleRow("Unwalk", State.unwalkEnabled, function(on, isSync)
+    State.unwalkEnabled = on
+    if on then startUnwalk() else stopUnwalk() end
+    if not isSync then task.spawn(saveConfig) end
+end, nil, p4)
+
+toggleRefs.noCollide = makeToggleRow("No Collide", State.noCollideEnabled, function(on, isSync)
+    State.noCollideEnabled = on
+    if on then startNoCollide() else stopNoCollide() end
+    if not isSync then task.spawn(saveConfig) end
+end, nil, p4)
+
+toggleRefs.uiLocked = makeToggleRow("Lock UI", State.uiLocked, function(on, isSync)
+    State.uiLocked = on; if not isSync then task.spawn(saveConfig) end
+end, nil, p4)
+
+toggleRefs.tryhardAnim = makeToggleRow("Tryhard Animation", State.tryhardAnimEnabled, function(on, isSync)
+    State.tryhardAnimEnabled = on
+    if not isSync then setCustomAnims() end
+    if not isSync then task.spawn(save... (52 KB restante(s))
