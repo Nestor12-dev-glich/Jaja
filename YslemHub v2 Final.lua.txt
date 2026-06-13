@@ -2908,40 +2908,4 @@ if SB.lagOn then SB.lagOn=false; SB.stopLag() end
 if SB.widget then SB.widget.Visible = false end
 refreshUIToggles()
 
--- KEY SYSTEM
-task.spawn(function() pcall(function()
-local KEY = "YSLEM-AX72-2AUC"
-local K_FILE = "YslemHubKeyV11.txt"
-local function k_load() local ok,v=pcall(readfile,K_FILE); if ok and v and #v>5 then return v:gsub("%s","") end; return nil end
-local function k_save(k) pcall(writefile,K_FILE,k) end
-if not k_load() then
-	local kgui=Instance.new("ScreenGui"); kgui.Name=DISC.name(); kgui.ResetOnSpawn=false; kgui.DisplayOrder=200; DISC.hide(kgui)
-	local kbg=Instance.new("Frame"); kbg.Size=UDim2.new(1,0,1,0); kbg.BackgroundColor3=Color3.fromRGB(0,0,0); kbg.BackgroundTransparency=0.4; kbg.BorderSizePixel=0; kbg.Parent=kgui
-	local card=Instance.new("Frame"); card.Size=UDim2.new(0,320,0,290); card.Position=UDim2.new(0.5,-160,0.5,-165); card.BackgroundColor3=Color3.fromRGB(10,10,14); card.BorderSizePixel=0; card.Parent=kgui
-	local cc=Instance.new("UICorner"); cc.CornerRadius=UDim.new(0,16); cc.Parent=card
-	local cstr=Instance.new("UIStroke"); cstr.Color=Color3.fromRGB(225,35,40); cstr.Thickness=2; cstr.Parent=card
-	local kt1=Instance.new("TextLabel"); kt1.Size=UDim2.new(1,0,0,34); kt1.Position=UDim2.new(0,0,0,16); kt1.BackgroundTransparency=1; kt1.Text="YSLEM HUB"; kt1.TextColor3=Color3.fromRGB(255,255,255); kt1.Font=Enum.Font.GothamBlack; kt1.TextSize=24; kt1.Parent=card
-	local kt2=Instance.new("TextLabel"); kt2.Size=UDim2.new(1,0,0,20); kt2.Position=UDim2.new(0,0,0,52); kt2.BackgroundTransparency=1; kt2.Text="Key Required"; kt2.TextColor3=Color3.fromRGB(225,35,40); kt2.Font=Enum.Font.GothamBold; kt2.TextSize=14; kt2.Parent=card
-	local kt3=Instance.new("TextLabel"); kt3.Size=UDim2.new(1,-20,0,32); kt3.Position=UDim2.new(0,10,0,76); kt3.BackgroundTransparency=1; kt3.TextWrapped=true; kt3.TextXAlignment=Enum.TextXAlignment.Left; kt3.Text="1. Join Discord  2. Copy the key in #key  3. Enter it below"; kt3.TextColor3=Color3.fromRGB(90,90,100); kt3.Font=Enum.Font.GothamBold; kt3.TextSize=12; kt3.Parent=card
-	local kbox=Instance.new("TextBox"); kbox.Size=UDim2.new(1,-20,0,42); kbox.Position=UDim2.new(0,10,0,114); kbox.BackgroundColor3=Color3.fromRGB(26,14,16); kbox.BorderSizePixel=0; kbox.Text=""; kbox.PlaceholderText="YSLEM-XXXX-XXXX"; kbox.TextColor3=Color3.fromRGB(255,255,255); kbox.PlaceholderColor3=Color3.fromRGB(90,90,100); kbox.Font=Enum.Font.GothamBold; kbox.TextSize=15; kbox.ClearTextOnFocus=false; kbox.Parent=card
-	local kbc=Instance.new("UICorner"); kbc.CornerRadius=UDim.new(0,8); kbc.Parent=kbox
-	local kbp=Instance.new("UIPadding"); kbp.PaddingLeft=UDim.new(0,10); kbp.Parent=kbox
-	local kstat=Instance.new("TextLabel"); kstat.Size=UDim2.new(1,0,0,16); kstat.Position=UDim2.new(0,0,0,162); kstat.BackgroundTransparency=1; kstat.Text=""; kstat.TextColor3=Color3.fromRGB(255,60,60); kstat.Font=Enum.Font.GothamBold; kstat.TextSize=12; kstat.Parent=card
-	local kbtn=Instance.new("TextButton"); kbtn.Size=UDim2.new(1,-20,0,42); kbtn.Position=UDim2.new(0,10,0,182); kbtn.BackgroundColor3=Color3.fromRGB(225,35,40); kbtn.BorderSizePixel=0; kbtn.Text="Confirm Key"; kbtn.TextColor3=Color3.fromRGB(255,255,255); kbtn.Font=Enum.Font.GothamBlack; kbtn.TextSize=15; kbtn.Parent=card
-	local kbtnc=Instance.new("UICorner"); kbtnc.CornerRadius=UDim.new(0,8); kbtnc.Parent=kbtn
-	local kdisc=Instance.new("TextButton"); kdisc.Size=UDim2.new(1,-20,0,36); kdisc.Position=UDim2.new(0,10,0,238); kdisc.BackgroundColor3=Color3.fromRGB(88,101,242); kdisc.BorderSizePixel=0; kdisc.Text="Join Discord"; kdisc.TextColor3=Color3.fromRGB(255,255,255); kdisc.Font=Enum.Font.GothamBold; kdisc.TextSize=13; kdisc.Parent=card
-	local kdc=Instance.new("UICorner"); kdc.CornerRadius=UDim.new(0,8); kdc.Parent=kdisc
-	kdisc.Activated:Connect(function() pcall(function() setclipboard("discord.gg/mJN8wTQqEv") end); kdisc.Text="Copied!"; task.delay(2,function() kdisc.Text="Join Discord" end) end)
-	local function k_unlock() kgui:Destroy() end
-	local function k_try()
-		local entered=kbox.Text:upper():gsub("%s","")
-		if entered==KEY then k_save(entered); kstat.Text="Key valid!"; kstat.TextColor3=Color3.fromRGB(80,255,120); kbtn.Text="Unlocking..."; kbtn.BackgroundColor3=Color3.fromRGB(80,255,120); task.delay(0.8,k_unlock)
-		else kstat.Text="Invalid key."; kstat.TextColor3=Color3.fromRGB(255,60,60) end
-	end
-	kbtn.Activated:Connect(k_try)
-	kbox.FocusLost:Connect(function(enter) if enter then k_try() end end)
-	task.spawn(function() while kgui and kgui.Parent do task.wait(0.5); if kbox.Text:upper():gsub("%s","")==KEY then k_try(); break end end end)
-end
-end) end)
-
 print("[Yslem Hub v2] Charge avec succes")
